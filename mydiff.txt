@@ -1,0 +1,1472 @@
+diff --git a/FileBrowser.qml b/FileBrowser.qml
+index 18a62b6..53f66ec 100644
+--- a/FileBrowser.qml
++++ b/FileBrowser.qml
+@@ -38,16 +38,33 @@ Rectangle {
+         count--
+         if (count < 0) count = 0
+         var imageSource = loader.item.folders.get(count, "fileName")
+-        var path = loader.item.folders.folder + "/" + imageSource
+-        fileSelected(path)
++        var s = extension(imageSource)
++        if (s === ".png" || s === ".jpg") {
++            var path = loader.item.folders.folder + "/" + imageSource
++            fileSelected(path)
++        } else {
++            count++
++        }
+     }
+ 
+     function next() {
+         count++
+         if (count === loader.item.folders.count) count = 0
+         var imageSource = loader.item.folders.get(count, "fileName")
+-        var path = loader.item.folders.folder + "/" + imageSource
+-        fileSelected(path)
++        var s = extension(imageSource)
++        if (s === ".png" || s === ".jpg") {
++            var path = loader.item.folders.folder + "/" + imageSource
++            fileSelected(path)
++        } else {
++            count--
++        }
++    }
++
++    function extension(str)
++    {
++        var s = (str.slice(str.lastIndexOf("/")+1))
++        var f = s.indexOf(".")
++        return s.slice(f)
+     }
+ 
+     Component {
+@@ -68,7 +85,7 @@ Rectangle {
+                 id: folders1
+                 folder: folder
+                 showDirsFirst: true
+-                //showDotAndDotDot: true                
++                //showDotAndDotDot: true
+             }
+ 
+             FolderListModel {
+@@ -193,18 +210,18 @@ Rectangle {
+                         PropertyChanges { target: view1; visible: false }
+                     }
+                 ]
+-//                transitions: [
+-//                    Transition {
+-//                        to: "current"
+-//                        SequentialAnimation {
+-//                            NumberAnimation { properties: "x"; duration: 250 }
+-//                        }
+-//                    },
+-//                    Transition {
+-//                        NumberAnimation { properties: "x"; duration: 250 }
+-//                        NumberAnimation { properties: "x"; duration: 250 }
+-//                    }
+-//                ]
++                //                transitions: [
++                //                    Transition {
++                //                        to: "current"
++                //                        SequentialAnimation {
++                //                            NumberAnimation { properties: "x"; duration: 250 }
++                //                        }
++                //                    },
++                //                    Transition {
++                //                        NumberAnimation { properties: "x"; duration: 250 }
++                //                        NumberAnimation { properties: "x"; duration: 250 }
++                //                    }
++                //                ]
+                 Keys.onPressed: root.keyPressed(event.key)
+             }
+ 
+@@ -244,30 +261,30 @@ Rectangle {
+                         PropertyChanges { target: view2; visible: false }
+                     }
+                 ]
+-//                transitions: [
+-//                    Transition {
+-//                        to: "current"
+-//                        SequentialAnimation {
+-//                            NumberAnimation { properties: "x"; duration: 250 }
+-//                        }
+-//                    },
+-//                    Transition {
+-//                        NumberAnimation { properties: "x"; duration: 250 }
+-//                    }
+-//                ]
++                //                transitions: [
++                //                    Transition {
++                //                        to: "current"
++                //                        SequentialAnimation {
++                //                            NumberAnimation { properties: "x"; duration: 250 }
++                //                        }
++                //                    },
++                //                    Transition {
++                //                        NumberAnimation { properties: "x"; duration: 250 }
++                //                    }
++                //                ]
+                 Keys.onPressed: root.keyPressed(event.key)
+             }
+ 
+-//            Button {
+-//                id: cancelButton
+-//                width: itemWidth
+-//                height: itemHeight
+-//                color: "#353535"
+-//                anchors { bottom: parent.bottom; right: parent.right; margins: 5 * scaledMargin }
+-//                text: "Cancel"
+-//                horizontalAlign: Text.AlignHCenter
+-//                onClicked: fileBrowser.selectFile("")
+-//            }
++            //            Button {
++            //                id: cancelButton
++            //                width: itemWidth
++            //                height: itemHeight
++            //                color: "#353535"
++            //                anchors { bottom: parent.bottom; right: parent.right; margins: 5 * scaledMargin }
++            //                text: "Cancel"
++            //                horizontalAlign: Text.AlignHCenter
++            //                onClicked: fileBrowser.selectFile("")
++            //            }
+ 
+             Keys.onPressed: {
+                 root.keyPressed(event.key);
+@@ -360,15 +377,15 @@ Rectangle {
+ 
+             function keyPressed(key) {
+                 switch (key) {
+-                    case Qt.Key_Up:
+-                    case Qt.Key_Down:
+-                    case Qt.Key_Left:
+-                    case Qt.Key_Right: {
+-                        root.showFocusHighlight = true;
+-                    }
+-                    break;
+-                    default:
+-                        // do nothing
++                case Qt.Key_Up:
++                case Qt.Key_Down:
++                case Qt.Key_Left:
++                case Qt.Key_Right: {
++                    root.showFocusHighlight = true;
++                }
++                break;
++                default:
++                    // do nothing
+                     break;
+                 }
+             }
+diff --git a/main.qml b/main.qml
+index 6a83a2e..dda5e48 100644
+--- a/main.qml
++++ b/main.qml
+@@ -197,717 +197,734 @@ ApplicationWindow {
+             Layout.maximumWidth: 500
+         }
+ 
+-        Page {
+-            id: page
++        SplitView {
+             anchors.top: parent.top
+             anchors.bottom: parent.bottom
+             anchors.left: fileBrowser.right
+             anchors.right: parent.right
++            orientation: Qt.Vertical
+ 
+-            Rectangle {
+-                anchors.fill: parent
+-                color: "black"
+-                opacity: 0.5
+-            }
+-
+-            Flickable {
+-                id: f
+-                anchors.fill: parent
+-                boundsBehavior: Flickable.StopAtBounds
+-                contentHeight: iContainer.height;
+-                contentWidth: iContainer.width;
+-                clip: true
+-
+-                property bool fitToScreenActive: true
++            Page {
++                id: page
++                anchors.top: parent.top
++                //            anchors.bottom: parent.bottom
++                anchors.left: parent.left
++                anchors.right: parent.right
++                height: parent.height
+ 
+-                property real minZoom: 0.1;
+-                property real maxZoom: 4
++                Rectangle {
++                    anchors.fill: parent
++                    color: "black"
++                    opacity: 0.5
++                }
+ 
+-                property real zoomStep: 0.05
++                Flickable {
++                    id: f
++                    anchors.fill: parent
++                    boundsBehavior: Flickable.StopAtBounds
++                    contentHeight: iContainer.height;
++                    contentWidth: iContainer.width;
++                    clip: true
+ 
+-                onWidthChanged: {
+-                    if (fitToScreenActive)
+-                        fitToScreen();
+-                }
+-                onHeightChanged: {
+-                    if (fitToScreenActive)
+-                        fitToScreen();
+-                }
++                    property bool fitToScreenActive: true
+ 
+-                Item {
+-                    id: iContainer
+-                    width: Math.max(i.width * i.scale, f.width)
+-                    height: Math.max(i.height * i.scale, f.height)
++                    property real minZoom: 0.1;
++                    property real maxZoom: 4
+ 
+-                    Image {
+-                        id: i
++                    property real zoomStep: 0.05
+ 
+-                        property real prevScale: 1.0;
++                    onWidthChanged: {
++                        if (fitToScreenActive)
++                            fitToScreen();
++                    }
++                    onHeightChanged: {
++                        if (fitToScreenActive)
++                            fitToScreen();
++                    }
+ 
+-                        asynchronous: true
+-                        cache: false
+-                        smooth: true
+-                        anchors.centerIn: parent
+-                        fillMode: Image.PreserveAspectFit
+-                        transformOrigin: Item.Center
+-                        onScaleChanged: {
+-                            if ((width * scale) > f.width) {
+-                                var xoff = (f.width / 2 + f.contentX) * scale / prevScale;
+-                                f.contentX = xoff - f.width / 2
+-                            }
+-                            if ((height * scale) > f.height) {
+-                                var yoff = (f.height / 2 + f.contentY) * scale / prevScale;
+-                                f.contentY = yoff - f.height / 2
++                    Item {
++                        id: iContainer
++                        width: Math.max(i.width * i.scale, f.width)
++                        height: Math.max(i.height * i.scale, f.height)
++
++                        Image {
++                            id: i
++
++                            property real prevScale: 1.0;
++
++                            asynchronous: true
++                            cache: false
++                            smooth: true
++                            anchors.centerIn: parent
++                            fillMode: Image.PreserveAspectFit
++                            transformOrigin: Item.Center
++                            onScaleChanged: {
++                                if ((width * scale) > f.width) {
++                                    var xoff = (f.width / 2 + f.contentX) * scale / prevScale;
++                                    f.contentX = xoff - f.width / 2
++                                }
++                                if ((height * scale) > f.height) {
++                                    var yoff = (f.height / 2 + f.contentY) * scale / prevScale;
++                                    f.contentY = yoff - f.height / 2
++                                }
++                                prevScale=scale;
+                             }
+-                            prevScale=scale;
+-                        }
+-                        onStatusChanged: {
+-                            if (status===Image.Ready) {
+-                                f.fitToScreen();
++                            onStatusChanged: {
++                                if (status===Image.Ready) {
++                                    f.fitToScreen();
++                                }
+                             }
+-                        }
+ 
+-                        Canvas {
+-                            id: canvas
+-                            anchors {
+-                                left: parent.left
+-                                bottom: parent.bottom
+-                            }
+-                            width: i.width
+-                            height: i.height
+-                            scale: i.scale
+-                            property real lastX
+-                            property real lastY
+-                            property color color: window.color
+-
+-                            onPaint: {
+-                                if (drawState.active) {
+-                                    var ctx = getContext('2d')
+-                                    ctx.lineWidth = window.size
+-                                    ctx.strokeStyle = canvas.color
+-                                    ctx.beginPath()
+-                                    ctx.moveTo(lastX, lastY)
+-                                    lastX = canvasMouseArea.mouseX
+-                                    lastY = canvasMouseArea.mouseY
+-                                    ctx.lineTo(lastX, lastY)
+-                                    ctx.stroke()
++                            Canvas {
++                                id: canvas
++                                anchors {
++                                    left: parent.left
++                                    bottom: parent.bottom
++                                }
++                                width: i.width
++                                height: i.height
++                                scale: i.scale
++                                property real lastX
++                                property real lastY
++                                property color color: window.color
++
++                                onPaint: {
++                                    if (drawState.active) {
++                                        var ctx = getContext('2d')
++                                        ctx.lineWidth = window.size
++                                        ctx.strokeStyle = canvas.color
++                                        ctx.beginPath()
++                                        ctx.moveTo(lastX, lastY)
++                                        lastX = canvasMouseArea.mouseX
++                                        lastY = canvasMouseArea.mouseY
++                                        ctx.lineTo(lastX, lastY)
++                                        ctx.stroke()
++                                    }
+                                 }
+                             }
+-                        }
+ 
+-                        MouseArea {
+-                            id: canvasMouseArea
+-                            preventStealing: false
++                            MouseArea {
++                                id: canvasMouseArea
++                                preventStealing: false
+ 
+-                            anchors.fill: parent
+-                            onWheel: {
+-                                if (wheel.angleDelta.y > 0)
+-                                    f.zoomIn()
+-                                else
+-                                    f.zoomOut()
+-                            }
+-                            onPressed: {
+-                                if (drawState.active) {
+-                                    canvas.lastX = mouseX
+-                                    canvas.lastY = mouseY
+-                                    canvasClear = false
++                                anchors.fill: parent
++                                onWheel: {
++                                    if (wheel.angleDelta.y > 0)
++                                        f.zoomIn()
++                                    else
++                                        f.zoomOut()
++                                }
++                                onPressed: {
++                                    if (drawState.active) {
++                                        canvas.lastX = mouseX
++                                        canvas.lastY = mouseY
++                                        canvasClear = false
++                                    }
++                                    mouseAreaPressed()
++                                }
++                                onPositionChanged: {
++                                    if (drawState.active)
++                                        canvas.requestPaint()
+                                 }
+-                                mouseAreaPressed()
+-                            }
+-                            onPositionChanged: {
+-                                if (drawState.active)
+-                                    canvas.requestPaint()
+                             }
+                         }
+                     }
+-                }
+-
+-                function fitToScreen() {
+-                    zoomFull()
+-                    var s = Math.min(f.width / i.width, f.height / i.height, 1)
+-                    i.scale = s;
+-                    f.minZoom = s;
+-                    i.prevScale = scale
+-                }
+-                function zoomIn() {
+-                    i.scale *=(1.0+zoomStep)
+-                }
+-                function zoomOut() {
+-                    i.scale *=(1.0-zoomStep)
+-                }
+-                function zoomFull() {
+-                    i.scale=1;
+-                    canvas.scale = 1;
+-                    fitToScreenActive=false;
+-                    f.returnToBounds();
+-                }
+-
+-                ScrollIndicator.vertical: ScrollIndicator { }
+-                ScrollIndicator.horizontal: ScrollIndicator { }
+-
+-            }
+-
+-            PinchArea {
+-                id: p
+-                anchors.fill: f
+-                enabled: i.status === Image.Ready
+-                pinch.target: i
+-                pinch.maximumScale: 2
+-                pinch.minimumScale: 0.1
+-                onPinchStarted: {
+-                    console.debug("PinchStart")
+-                    f.interactive=false;
+-                }
+-
+-                onPinchUpdated: {
+-                    f.contentX += pinch.previousCenter.x - pinch.center.x
+-                    f.contentY += pinch.previousCenter.y - pinch.center.y
+-                }
+-
+-                onPinchFinished: {
+-                    console.debug("PinchEnd")
+-                    f.interactive=true;
+-                    f.returnToBounds();
+-                }
+-            }
+-
+-            Rectangle {
+-                id: transitionRect
+-                visible: true
+-                anchors.right: parent.right
+-                anchors.top: parent.top
+-                height: 50
+-                width: 50
+-                color: "grey"
+-                opacity: 0.5
+-
+-                Image {
+-                    id: transitionImage
+-                    anchors.fill: parent
+-                    source: "qrc:/images/file-zoom-out.png"
+-                }
+ 
+-                MouseArea {
+-                    anchors.fill: parent
+-                    onPressed: {
+-                        if (window.visibility == Window.FullScreen) {
+-                            //window.visibility = Window.Maximized
+-                            window.showMaximized()
+-                            window.width = Screen.desktopAvailableWidth
+-                            window.height = Screen.desktopAvailableHeight
+-                            window.x = 0
+-                            window.y = 0
+-                            transitionImage.source = "qrc:/images/file-zoom-in.png"
+-                        }
+-                        else if (window.visibility != Window.FullScreen) {
+-                            //window.visibility = Window.FullScreen
+-                            window.showFullScreen()
+-                            transitionImage.source = "qrc:/images/file-zoom-out.png"
+-                        }
++                    function fitToScreen() {
++                        zoomFull()
++                        var s = Math.min(f.width / i.width, f.height / i.height, 1)
++                        i.scale = s;
++                        f.minZoom = s;
++                        i.prevScale = scale
+                     }
+-                }
+-            }
+-
+-            Rectangle {
+-                id: previousRect
+-                visible: false
+-                anchors.left: parent.left
+-                anchors.verticalCenter: parent.verticalCenter
+-                height: 100
+-                width: 100
+-                color: "grey"
+-                opacity: 0.5
+-
+-                Image {
+-                    anchors.fill: parent
+-                    source: "qrc:/images/left-arrow.png"
+-                }
+-
+-                MouseArea {
+-                    id: previousMouseArea
+-                    anchors.fill: parent
+-                    onPressed: {
+-                        fileBrowser.previous()
++                    function zoomIn() {
++                        i.scale *=(1.0+zoomStep)
+                     }
+-                }
+-            }
+-
+-            Rectangle {
+-                id: nextRect
+-                visible: false
+-                anchors.right: parent.right
+-                anchors.verticalCenter: parent.verticalCenter
+-                height: 100
+-                width: 100
+-                color: "grey"
+-                opacity: 0.5
+-
+-                Image {
+-                    anchors.fill: parent
+-                    source: "qrc:/images/left-arrow.png"
+-                    transformOrigin: Item.Center
+-                    rotation: 180
+-                }
+-
+-                MouseArea {
+-                    id: nextMouseArea
+-                    anchors.fill: parent
+-                    onPressed: {
+-                        fileBrowser.next()
++                    function zoomOut() {
++                        i.scale *=(1.0-zoomStep)
+                     }
+-                }
+-            }
+-
+-            Rectangle {
+-                id: fullScreenRect
+-                visible: false
+-                anchors.right: transitionRect.left
+-                anchors.rightMargin: 25
+-                anchors.top: parent.top
+-                height: 50
+-                width: 50
+-                color: "grey"
+-                opacity: 0.5
+-
+-                Image {
+-                    id: fullScreenImage
+-                    anchors.fill: parent
+-                    source: "qrc:/images/auto-transition-right.png"
+-                }
+-
+-                MouseArea {
+-                    id: fullScreenMouseArea
+-                    anchors.fill: parent
+-                    onPressed: {
+-                        if (appState == 2) {
+-                            fileBrowser.width = 400
+-                            fileBrowser.visible = true
+-                            appState = 1
+-                        }
+-                        else {
+-                            appState = 2
+-                            fileBrowser.minimumWidth = 0
+-                            fileBrowser.width = 0
+-                            fileBrowser.visible = false
+-                        }
++                    function zoomFull() {
++                        i.scale=1;
++                        canvas.scale = 1;
++                        fitToScreenActive=false;
++                        f.returnToBounds();
+                     }
+-                }
+-            }
+ 
+-            Rectangle {
+-                id: fitZoomRect
+-                visible: false
+-                anchors.right: fullScreenRect.left
+-                anchors.rightMargin: 25
+-                anchors.top: parent.top
+-                height: 50
+-                width: 50
+-                color: "grey"
+-                opacity: 0.5
++                    ScrollIndicator.vertical: ScrollIndicator { }
++                    ScrollIndicator.horizontal: ScrollIndicator { }
+ 
+-                Image {
+-                    anchors.fill: parent
+-                    source: "qrc:/images/zoom-fit-best.png"
+                 }
+ 
+-                MouseArea {
+-                    id: fitZoomMouseArea
+-                    anchors.fill: parent
+-                    onPressed: {
+-                        f.zoomFull()
++                PinchArea {
++                    id: p
++                    anchors.fill: f
++                    enabled: i.status === Image.Ready
++                    pinch.target: i
++                    pinch.maximumScale: 2
++                    pinch.minimumScale: 0.1
++                    onPinchStarted: {
++                        console.debug("PinchStart")
++                        f.interactive=false;
+                     }
+-                }
+-            }
+-
+-            Rectangle {
+-                id: fitScreenRect
+-                visible: false
+-                anchors.right: fitZoomRect.left
+-                anchors.rightMargin: 25
+-                anchors.top: parent.top
+-                height: 50
+-                width: 50
+-                color: "grey"
+-                opacity: 0.5
+ 
+-                Image {
+-                    anchors.fill: parent
+-                    source: "qrc:/images/zoom-original.png"
+-                }
++                    onPinchUpdated: {
++                        f.contentX += pinch.previousCenter.x - pinch.center.x
++                        f.contentY += pinch.previousCenter.y - pinch.center.y
++                    }
+ 
+-                MouseArea {
+-                    id: fitScreenMouseArea
+-                    anchors.fill: parent
+-                    onPressed: {
+-                        f.fitToScreen()
++                    onPinchFinished: {
++                        console.debug("PinchEnd")
++                        f.interactive=true;
++                        f.returnToBounds();
+                     }
+                 }
+-            }
+ 
+-            Label {
+-                id: fileLabel
+-                anchors.left: parent.left
+-                anchors.top: parent.top
+-                anchors.horizontalCenter: parent.horizontalCenter
+-                font.bold: true
+-                font.pixelSize: 22
+-                horizontalAlignment: Text.AlignHCenter
+-                verticalAlignment: Text.AlignVCenter
+-                text: file
+-            }
+-
+-            Rectangle {
+-                id: drawRect
+-                visible: false
+-                anchors.left: parent.left
+-                anchors.bottom: parent.bottom
+-                height: 50
+-                width: 50
+-                color: "grey"
+-                opacity: 0.9
+-                radius: 20
++                Rectangle {
++                    id: transitionRect
++                    visible: true
++                    anchors.right: parent.right
++                    anchors.top: parent.top
++                    height: 50
++                    width: 50
++                    color: "grey"
++                    opacity: 0.5
+ 
+-                Image {
+-                    anchors.fill: parent
+-                    source: "qrc:/images/document-edit.png"
+-                }
++                    Image {
++                        id: transitionImage
++                        anchors.fill: parent
++                        source: "qrc:/images/file-zoom-out.png"
++                    }
+ 
+-                MouseArea {
+-                    id: drawRectArea
+-                    anchors.fill: parent
+-                    onPressed: drawButtonPressed()
++                    MouseArea {
++                        anchors.fill: parent
++                        onPressed: {
++                            if (window.visibility == Window.FullScreen) {
++                                //window.visibility = Window.Maximized
++                                window.showMaximized()
++                                window.width = Screen.desktopAvailableWidth
++                                window.height = Screen.desktopAvailableHeight
++                                window.x = 0
++                                window.y = 0
++                                transitionImage.source = "qrc:/images/file-zoom-in.png"
++                            }
++                            else if (window.visibility != Window.FullScreen) {
++                                //window.visibility = Window.FullScreen
++                                window.showFullScreen()
++                                transitionImage.source = "qrc:/images/file-zoom-out.png"
++                            }
++                        }
++                    }
+                 }
+-            }
+-
+-            Rectangle {
+-                id: toolRect
+-                visible: false
+-                anchors.left: drawRect.right
+-                anchors.right: parent.right
+-                anchors.bottom: parent.bottom
+-                height: 50
+-                color: "grey"
+-                opacity: 0.9
+-                radius: 20
+ 
+                 Rectangle {
+-                    id: blueButton
+-                    width: 50
+-                    height: 50
++                    id: previousRect
++                    visible: false
+                     anchors.left: parent.left
+-                    anchors.leftMargin: 100
+-                    anchors.bottom: parent.bottom
+-                    color: "blue"
+-                    radius: 20
++                    anchors.verticalCenter: parent.verticalCenter
++                    height: 100
++                    width: 100
++                    color: "grey"
++                    opacity: 0.5
++
++                    Image {
++                        anchors.fill: parent
++                        source: "qrc:/images/left-arrow.png"
++                    }
+ 
+                     MouseArea {
++                        id: previousMouseArea
+                         anchors.fill: parent
+                         onPressed: {
+-                            window.color = "blue"
+-                            drawRect.border.color = window.color
++                            fileBrowser.previous()
+                         }
+                     }
+                 }
+ 
+                 Rectangle {
+-                    id: greenButton
+-                    width: 50
+-                    height: 50
+-                    anchors.left: blueButton.right
+-                    anchors.leftMargin: 25
+-                    anchors.bottom: parent.bottom
+-                    color: "green"
+-                    radius: 20
++                    id: nextRect
++                    visible: false
++                    anchors.right: parent.right
++                    anchors.verticalCenter: parent.verticalCenter
++                    height: 100
++                    width: 100
++                    color: "grey"
++                    opacity: 0.5
++
++                    Image {
++                        anchors.fill: parent
++                        source: "qrc:/images/left-arrow.png"
++                        transformOrigin: Item.Center
++                        rotation: 180
++                    }
+ 
+                     MouseArea {
++                        id: nextMouseArea
+                         anchors.fill: parent
+                         onPressed: {
+-                            window.color = "green"
+-                            drawRect.border.color = window.color
++                            fileBrowser.next()
+                         }
+                     }
+                 }
+ 
+                 Rectangle {
+-                    id: yellowButton
+-                    width: 50
++                    id: fullScreenRect
++                    visible: false
++                    anchors.right: transitionRect.left
++                    anchors.rightMargin: 25
++                    anchors.top: parent.top
+                     height: 50
+-                    anchors.left: greenButton.right
+-                    anchors.leftMargin: 25
+-                    anchors.bottom: parent.bottom
+-                    color: "yellow"
+-                    radius: 20
++                    width: 50
++                    color: "grey"
++                    opacity: 0.5
++
++                    Image {
++                        id: fullScreenImage
++                        anchors.fill: parent
++                        source: "qrc:/images/auto-transition-right.png"
++                    }
+ 
+                     MouseArea {
++                        id: fullScreenMouseArea
+                         anchors.fill: parent
+                         onPressed: {
+-                            window.color = "yellow"
+-                            drawRect.border.color = window.color
++                            if (appState == 2) {
++                                fileBrowser.width = 400
++                                fileBrowser.visible = true
++                                appState = 1
++                            }
++                            else {
++                                appState = 2
++                                fileBrowser.minimumWidth = 0
++                                fileBrowser.width = 0
++                                fileBrowser.visible = false
++                            }
+                         }
+                     }
+                 }
+ 
+                 Rectangle {
+-                    id: redButton
+-                    width: 50
++                    id: fitZoomRect
++                    visible: false
++                    anchors.right: fullScreenRect.left
++                    anchors.rightMargin: 25
++                    anchors.top: parent.top
+                     height: 50
+-                    anchors.left: yellowButton.right
+-                    anchors.leftMargin: 25
+-                    anchors.bottom: parent.bottom
+-                    color: "red"
+-                    radius: 20
++                    width: 50
++                    color: "grey"
++                    opacity: 0.5
++
++                    Image {
++                        anchors.fill: parent
++                        source: "qrc:/images/zoom-fit-best.png"
++                    }
+ 
+                     MouseArea {
++                        id: fitZoomMouseArea
+                         anchors.fill: parent
+                         onPressed: {
+-                            window.color = "red"
+-                            drawRect.border.color = window.color
++                            f.zoomFull()
+                         }
+                     }
+                 }
+ 
+-                Image {
+-                    id: colorButton
+-                    width: 50
++                Rectangle {
++                    id: fitScreenRect
++                    visible: false
++                    anchors.right: fitZoomRect.left
++                    anchors.rightMargin: 25
++                    anchors.top: parent.top
+                     height: 50
+-                    anchors.left: redButton.right
+-                    anchors.leftMargin: 25
+-                    anchors.bottom: parent.bottom
+-                    source: "qrc:/images/color-management.png"
++                    width: 50
++                    color: "grey"
++                    opacity: 0.5
+ 
+-                    MouseArea {
++                    Image {
+                         anchors.fill: parent
+-                        onPressed: colorDialog.visible = true
++                        source: "qrc:/images/zoom-original.png"
+                     }
+ 
+-                    ColorDialog {
+-                        id: colorDialog
+-                        title: "Please choose a color"
+-                        visible: false
+-                        onAccepted: {
+-                            window.color = colorDialog.color
+-                            drawRect.border.color = window.color
++                    MouseArea {
++                        id: fitScreenMouseArea
++                        anchors.fill: parent
++                        onPressed: {
++                            f.fitToScreen()
+                         }
+                     }
+                 }
+ 
+-                Slider {
+-                    id: sizeSlider
+-                    width: 200
+-                    height: 50
+-                    anchors.left: colorButton.right
+-                    anchors.leftMargin: 25
+-                    anchors.bottom: parent.bottom
+-                    minimumValue: 1
+-                    maximumValue: 25
+-                    stepSize: 1
+-                    value: 5
+-                    onValueChanged: window.size = value
+-                }
+-
+                 Label {
+-                    id: sizeLabel
+-                    width: 50
+-                    height: 50
+-                    anchors.left: sizeSlider.right
+-                    anchors.leftMargin: 15
+-                    anchors.bottom: parent.bottom
+-                    text: sizeSlider.value
++                    id: fileLabel
++                    anchors.left: parent.left
++                    anchors.top: parent.top
++                    anchors.horizontalCenter: parent.horizontalCenter
+                     font.bold: true
++                    font.pixelSize: 22
+                     horizontalAlignment: Text.AlignHCenter
+                     verticalAlignment: Text.AlignVCenter
++                    text: file
+                 }
+ 
+-                Image {
+-                    id: clearButton
+-                    width: 50
+-                    height: 50
+-                    anchors.left: sizeLabel.right
+-                    anchors.leftMargin: 25
++                Rectangle {
++                    id: drawRect
++                    visible: false
++                    anchors.left: parent.left
+                     anchors.bottom: parent.bottom
+-                    source: "qrc:/images/edit-reset.png"
+-                    visible: !window.canvasClear
++                    height: 50
++                    width: 50
++                    color: "grey"
++                    opacity: 0.9
++                    radius: 20
++
++                    Image {
++                        anchors.fill: parent
++                        source: "qrc:/images/document-edit.png"
++                    }
+ 
+                     MouseArea {
++                        id: drawRectArea
+                         anchors.fill: parent
+-                        onPressed: {
+-                            var ctx = canvas.getContext('2d')
+-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+-                            canvas.requestPaint()
+-                            window.canvasClear = true
+-                        }
++                        onPressed: drawButtonPressed()
+                     }
+                 }
+-            }
+ 
+-            Rectangle {
+-                id: fileRect
+-                visible: false
+-                anchors.right: parent.right
+-                anchors.bottom: parent.bottom
+-                height: 50
+-                width: 50
+-                color: "grey"
+-                opacity: 0.9
+-                radius: 20
++                Rectangle {
++                    id: toolRect
++                    visible: false
++                    anchors.left: drawRect.right
++                    anchors.right: parent.right
++                    anchors.bottom: parent.bottom
++                    height: 50
++                    color: "grey"
++                    opacity: 0.9
++                    radius: 20
+ 
+-                Image {
+-                    anchors.fill: parent
+-                    source: "qrc:/images/folder-blue.png"
+-                }
++                    Rectangle {
++                        id: blueButton
++                        width: 50
++                        height: 50
++                        anchors.left: parent.left
++                        anchors.leftMargin: 100
++                        anchors.bottom: parent.bottom
++                        color: "blue"
++                        radius: 20
+ 
+-                MouseArea {
+-                    id: fileRectArea
+-                    anchors.fill: parent
+-                    onPressed: fileButtonPressed()
+-                }
+-            }
++                        MouseArea {
++                            anchors.fill: parent
++                            onPressed: {
++                                window.color = "blue"
++                                drawRect.border.color = window.color
++                            }
++                        }
++                    }
+ 
+-            Rectangle {
+-                id: fileToolRect
+-                visible: false
+-                anchors.left: parent.left
+-                anchors.right: fileRect.left
+-                anchors.bottom: parent.bottom
+-                height: 50
+-                color: "grey"
+-                opacity: 0.9
+-                radius: 20
++                    Rectangle {
++                        id: greenButton
++                        width: 50
++                        height: 50
++                        anchors.left: blueButton.right
++                        anchors.leftMargin: 25
++                        anchors.bottom: parent.bottom
++                        color: "green"
++                        radius: 20
+ 
+-                Image {
+-                    id: fileRenameButton
+-                    width: 50
+-                    height: 50
+-                    anchors.left: parent.left
+-                    anchors.leftMargin: 100
+-                    anchors.bottom: parent.bottom
+-                    source: "qrc:/images/check_constraint.png"
++                        MouseArea {
++                            anchors.fill: parent
++                            onPressed: {
++                                window.color = "green"
++                                drawRect.border.color = window.color
++                            }
++                        }
++                    }
+ 
+-                    MouseArea {
+-                        anchors.fill: parent
+-                        onPressed: {
+-                            dialog.visible = true
++                    Rectangle {
++                        id: yellowButton
++                        width: 50
++                        height: 50
++                        anchors.left: greenButton.right
++                        anchors.leftMargin: 25
++                        anchors.bottom: parent.bottom
++                        color: "yellow"
++                        radius: 20
++
++                        MouseArea {
++                            anchors.fill: parent
++                            onPressed: {
++                                window.color = "yellow"
++                                drawRect.border.color = window.color
++                            }
++                        }
++                    }
++
++                    Rectangle {
++                        id: redButton
++                        width: 50
++                        height: 50
++                        anchors.left: yellowButton.right
++                        anchors.leftMargin: 25
++                        anchors.bottom: parent.bottom
++                        color: "red"
++                        radius: 20
++
++                        MouseArea {
++                            anchors.fill: parent
++                            onPressed: {
++                                window.color = "red"
++                                drawRect.border.color = window.color
++                            }
++                        }
++                    }
++
++                    Image {
++                        id: colorButton
++                        width: 50
++                        height: 50
++                        anchors.left: redButton.right
++                        anchors.leftMargin: 25
++                        anchors.bottom: parent.bottom
++                        source: "qrc:/images/color-management.png"
++
++                        MouseArea {
++                            anchors.fill: parent
++                            onPressed: colorDialog.visible = true
+                         }
++
++                        ColorDialog {
++                            id: colorDialog
++                            title: "Please choose a color"
++                            visible: false
++                            onAccepted: {
++                                window.color = colorDialog.color
++                                drawRect.border.color = window.color
++                            }
++                        }
++                    }
++
++                    Slider {
++                        id: sizeSlider
++                        width: 200
++                        height: 50
++                        anchors.left: colorButton.right
++                        anchors.leftMargin: 25
++                        anchors.bottom: parent.bottom
++                        minimumValue: 1
++                        maximumValue: 25
++                        stepSize: 1
++                        value: 5
++                        onValueChanged: window.size = value
++                    }
++
++                    Label {
++                        id: sizeLabel
++                        width: 50
++                        height: 50
++                        anchors.left: sizeSlider.right
++                        anchors.leftMargin: 15
++                        anchors.bottom: parent.bottom
++                        text: sizeSlider.value
++                        font.bold: true
++                        horizontalAlignment: Text.AlignHCenter
++                        verticalAlignment: Text.AlignVCenter
+                     }
+ 
++                    Image {
++                        id: clearButton
++                        width: 50
++                        height: 50
++                        anchors.left: sizeLabel.right
++                        anchors.leftMargin: 25
++                        anchors.bottom: parent.bottom
++                        source: "qrc:/images/edit-reset.png"
++                        visible: !window.canvasClear
+ 
++                        MouseArea {
++                            anchors.fill: parent
++                            onPressed: {
++                                var ctx = canvas.getContext('2d')
++                                ctx.clearRect(0, 0, canvas.width, canvas.height);
++                                canvas.requestPaint()
++                                window.canvasClear = true
++                            }
++                        }
++                    }
+                 }
+ 
+-                Image {
+-                    id: fileRemoveButton
+-                    width: 50
+-                    height: 50
+-                    anchors.left: fileRenameButton.right
+-                    anchors.leftMargin: 25
++                Rectangle {
++                    id: fileRect
++                    visible: false
++                    anchors.right: parent.right
+                     anchors.bottom: parent.bottom
+-                    source: "qrc:/images/delete.png"
+-
+-                    MessageDialog {
+-                        id: messageDialog
+-                        title: "Remove file"
+-                        text: "Do you really want to remove file?"
+-                        standardButtons: StandardButton.Ok | StandardButton.Cancel
+-                        onAccepted: {
+-                            var filename = dir + file + ext
+-                            fileExplorer.removeFile(filename)
+-                        }
+-                        visible: false
++                    height: 50
++                    width: 50
++                    color: "grey"
++                    opacity: 0.9
++                    radius: 20
++
++                    Image {
++                        anchors.fill: parent
++                        source: "qrc:/images/folder-blue.png"
+                     }
+ 
+                     MouseArea {
++                        id: fileRectArea
+                         anchors.fill: parent
+-                        onPressed: messageDialog.visible = true
++                        onPressed: fileButtonPressed()
+                     }
+                 }
+-            }
+ 
+-            Rectangle {
+-                id: dialog
+-                width: 500
+-                height: 90
+-                anchors.horizontalCenter: parent.horizontalCenter
+-                anchors.verticalCenter: parent.verticalCenter
+-                visible: false
+-
+-                TextField {
+-                    id: textField
++                Rectangle {
++                    id: fileToolRect
++                    visible: false
+                     anchors.left: parent.left
+-                    anchors.right: parent.right
+-                    anchors.top: parent.top
+-                    height: 30
+-                    text: "New name:"
+-                    readOnly: true
+-                }
++                    anchors.right: fileRect.left
++                    anchors.bottom: parent.bottom
++                    height: 50
++                    color: "grey"
++                    opacity: 0.9
++                    radius: 20
++
++                    Image {
++                        id: fileRenameButton
++                        width: 50
++                        height: 50
++                        anchors.left: parent.left
++                        anchors.leftMargin: 100
++                        anchors.bottom: parent.bottom
++                        source: "qrc:/images/check_constraint.png"
++
++                        MouseArea {
++                            anchors.fill: parent
++                            onPressed: {
++                                dialog.visible = true
++                            }
++                        }
+ 
+-                TextField {
+-                    id: textInput
+-                    anchors.left: parent.left
+-                    anchors.right: parent.right
+-                    anchors.top: textField.bottom
+-                    height: 30
+-                }
+ 
+-                Button {
+-                    anchors.top: textInput.bottom
+-                    anchors.right: parent.right
+-                    height: 30
+-                    text: "Ok"
+-                    onClicked: {
+-                        dialog.visible = false
+-                        var oldName = dir + file + ext
+-                        var newName = dir + textInput.text + ext
+-                        fileExplorer.rename(oldName, newName)
+-                        file = textInput.text
+                     }
+-                }
+ 
+-                Button {
+-                    text: "Cancel"
+-                    anchors.top: textInput.bottom
+-                    anchors.left: parent.left
+-                    height: 30
+-                    onClicked: {
+-                        textInput.text = ""
+-                        dialog.visible = false
++                    Image {
++                        id: fileRemoveButton
++                        width: 50
++                        height: 50
++                        anchors.left: fileRenameButton.right
++                        anchors.leftMargin: 25
++                        anchors.bottom: parent.bottom
++                        source: "qrc:/images/delete.png"
++
++                        MessageDialog {
++                            id: messageDialog
++                            title: "Remove file"
++                            text: "Do you really want to remove file?"
++                            standardButtons: StandardButton.Ok | StandardButton.Cancel
++                            onAccepted: {
++                                var filename = dir + file + ext
++                                fileExplorer.removeFile(filename)
++                            }
++                            visible: false
++                        }
++
++                        MouseArea {
++                            anchors.fill: parent
++                            onPressed: messageDialog.visible = true
++                        }
+                     }
+                 }
+ 
+-                onVisibleChanged: {
+-                    if (visible) {
+-                        textInput.text = file
++                Rectangle {
++                    id: dialog
++                    width: 500
++                    height: 90
++                    anchors.horizontalCenter: parent.horizontalCenter
++                    anchors.verticalCenter: parent.verticalCenter
++                    visible: false
++
++                    TextField {
++                        id: textField
++                        anchors.left: parent.left
++                        anchors.right: parent.right
++                        anchors.top: parent.top
++                        height: 30
++                        text: "New name:"
++                        readOnly: true
++                    }
++
++                    TextField {
++                        id: textInput
++                        anchors.left: parent.left
++                        anchors.right: parent.right
++                        anchors.top: textField.bottom
++                        height: 30
++                    }
++
++                    Button {
++                        anchors.top: textInput.bottom
++                        anchors.right: parent.right
++                        height: 30
++                        text: "Ok"
++                        onClicked: {
++                            dialog.visible = false
++                            var oldName = dir + file + ext
++                            var newName = dir + textInput.text + ext
++                            fileExplorer.rename(oldName, newName)
++                            file = textInput.text
++                        }
++                    }
++
++                    Button {
++                        text: "Cancel"
++                        anchors.top: textInput.bottom
++                        anchors.left: parent.left
++                        height: 30
++                        onClicked: {
++                            textInput.text = ""
++                            dialog.visible = false
++                        }
++                    }
++
++                    onVisibleChanged: {
++                        if (visible) {
++                            textInput.text = file
++                        }
+                     }
+                 }
+-            }
+ 
+-            function updateImage(source) {
+-                var ctx = canvas.getContext('2d')
+-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+-                canvasClear = true
+-                updatePage()
+-                i.source = source
+-                file = basename(source)
+-                ext = extension(source)
+-                dir = directory(source)
+-            }
++                function updateImage(source) {
++                    var ctx = canvas.getContext('2d')
++                    ctx.clearRect(0, 0, canvas.width, canvas.height);
++                    canvasClear = true
++                    updatePage()
++                    i.source = source
++                    file = basename(source)
++                    ext = extension(source)
++                    dir = directory(source)
++                }
+ 
+-            function basename(str)
+-            {
+-                var s = (str.slice(str.lastIndexOf("/")+1))
+-                var f = s.indexOf(".")
+-                return s.substring(0, f)
+-            }
++                function basename(str)
++                {
++                    var s = (str.slice(str.lastIndexOf("/")+1))
++                    var f = s.indexOf(".")
++                    return s.substring(0, f)
++                }
++
++                function extension(str)
++                {
++                    var s = (str.slice(str.lastIndexOf("/")+1))
++                    var f = s.indexOf(".")
++                    return s.slice(f)
++                }
++
++                function directory(str) {
++                    var s = str.replace("file://", "")
++                    var f = s.lastIndexOf("/") + 1
++                    return s.substring(0, f)
++                }
+ 
+-            function extension(str)
+-            {
+-                var s = (str.slice(str.lastIndexOf("/")+1))
+-                var f = s.indexOf(".")
+-                return s.slice(f)
+             }
+ 
+-            function directory(str) {
+-                var s = str.replace("file://", "")
+-                var f = s.lastIndexOf("/") + 1
+-                return s.substring(0, f)
++            Rectangle {
++                anchors.top: page.bottom
++                anchors.bottom: parent.bottom
++                anchors.left: parent.left
++                anchors.right: parent.right
+             }
+ 
+         }

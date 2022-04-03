@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Button.qml</file>
+        <file>FileBrowser.qml</file>
+        <file>images/icon_Folder.png</file>
+        <file>images/icon_BackArrow.png</file>
+        <file>images/left-arrow.png</file>
+        <file>images/fullscreen.png</file>
+        <file>images/go-previous.png</file>
+        <file>images/zoom-fit-best.png</file>
+        <file>images/file-zoom-in.png</file>
+        <file>images/file-zoom-out.png</file>
+        <file>images/zoom-original.png</file>
+        <file>images/document-edit.png</file>
+        <file>images/color-management.png</file>
+        <file>images/delete.png</file>
+        <file>images/folder-blue.png</file>
+        <file>images/edit-reset.png</file>
+        <file>images/check_constraint.png</file>
+        <file>images/auto-transition-right.png</file>
+        <file>TextBook.qml</file>
+        <file>images/tool_pagelayout.png</file>
+        <file>images/document-save.png</file>
+        <file>images/go-down.png</file>
+        <file>images/go-up.png</file>
+        <file>StateMachine.qml</file>
+        <file>MySplitView.qml</file>
+        <file>SplitViewFunctions.js</file>
+    </qresource>
+</RCC>
