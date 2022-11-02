@@ -27,5 +27,23 @@
         <file>StateMachine.qml</file>
         <file>MySplitView.qml</file>
         <file>SplitViewFunctions.js</file>
+        <file>MyTextRect.qml</file>
+        <file>MyDialog.qml</file>
+        <file>MyFileToolRect.qml</file>
+        <file>MyFileRect.qml</file>
+        <file>MyToolRect.qml</file>
+        <file>MyDrawRect.qml</file>
+        <file>MyFileLabel.qml</file>
+        <file>MyZoomOutRect.qml</file>
+        <file>MyZoomInRect.qml</file>
+        <file>MyFitScreenRect.qml</file>
+        <file>MyFitZoomRect.qml</file>
+        <file>MyFullScreenRect.qml</file>
+        <file>MyNextRect.qml</file>
+        <file>MyPreviousRect.qml</file>
+        <file>MyTransitionRect.qml</file>
+        <file>MyCanvas.qml</file>
+        <file>MyFlickable.qml</file>
+        <file>MyPage.qml</file>
     </qresource>
 </RCC>

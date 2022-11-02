@@ -73,9 +73,9 @@ ApplicationWindow {
         if (!canvasClear) {
             canvasClear = true
             var filename = window.dir + window.file + "-annotated.png"
-            iContainer.visible = false
-            i.scale = 1
-            iContainer.grabToImage(function(result) {
+            mySplitView.iContainer.visible = false
+            mySplitView.image.scale = 1
+            mySplitView.iContainer.grabToImage(function(result) {
                 result.saveToFile(filename);
                 fileExplorer.makeBackup(window.dir, window.file + window.ext)
                 window.close()
